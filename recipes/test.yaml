@@ -1,0 +1,10 @@
+model: Qwen/Qwen3-1.7B
+runtime: vllm
+container: scitrera/dgx-spark-vllm:0.16.0-t5
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+
+command: |
+  vllm serve {model} --host {host} --port {port}
