@@ -1,0 +1,4 @@
+registries:
+  - name: rumplestilzkens-registry
+    description: My recipes for DGX Spark
+    recipes: recipes
