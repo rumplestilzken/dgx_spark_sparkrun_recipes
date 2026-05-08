@@ -1,0 +1,47 @@
+# Recipe: Qwen3.5-397B-A17B-NVFP4
+# nvidia/Qwen3.5-397B-A17B-NVFP4 model in online NVFP4 quantization
+
+recipe_version: "1"
+name: Qwen3.5-397B-A17B-NVFP4
+description: vLLM serving Qwen3.5-397B-A17B-NVFP4
+
+# HuggingFace model to download (optional, for --download-model)
+model: nvidia/Qwen3.5-397B-A17B-NVFP4
+
+# Only cluster is supported
+cluster_only: false
+solo_only: false
+
+# Container image to use
+container: vllm-node-tf5
+
+build_args:
+  - --tf5
+
+# Default settings (can be overridden via CLI)
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  tensor_parallel: 1
+  pipeline_parallel: 3
+  gpu_memory_utilization: 0.7
+  max_model_len: 128000
+  max_num_batched_tokens: 8192
+
+# Environment variables
+env: {}
+
+# The vLLM serve command template
+command: |
+  vllm serve google/gemma-4-26B-A4B-it  \
+    --max-model-len {max_model_len} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --port {port} \
+    --host {host} \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice \
+    --quantization nvfp4 \
+    --kv-cache-dtype fp8 \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    -tp {tensor_parallel} 
+    -pp {pipeline_parallel} --distributed-executor-backend ray
