@@ -1,0 +1,56 @@
+recipe_version: "2"
+model: Sehyo/Qwen3.5-122B-A10B-NVFP4
+runtime: vllm
+
+# this recipe is specific to 3-node mesh, so we set min/max nodes to 3
+min_nodes: 2
+
+# using the Spark Arena eugr nightly container will signal sparkrun to use @eugr's latest release
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
+
+metadata:
+  description: Recipe for Sehyo/Qwen3.5-122B-A10B-NVFP4 to run on 2 nodes
+
+build_args:
+  - --tf5
+
+# Mod required to fix ROPE syntax error
+mods:
+  - mods/fix-qwen3.5-chat-template
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  pipeline_parallel: 1
+  tensor_parallel: 2
+  gpu_memory_utilization: 0.89
+  max_num_batched_tokens: 16384
+  max_num_seqs: 10
+  kv_cache_dtype: fp8
+  tool_call_parser: qwen3_coder
+  reasoning_parser: qwen3
+  load_format: instanttensor
+
+# Environment variables
+env:
+  PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+  VLLM_MARLIN_USE_ATOMIC_ADD: 1
+
+# The vLLM serve command template
+command: |
+  vllm serve {model} \
+    --max-num-seqs {max_num_seqs} \
+    --kv-cache-dtype {kv_cache_dtype} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --port {port} \
+    --host {host} \
+    --enable-prefix-caching \
+    --enable-auto-tool-choice \
+    --tool-call-parser {tool_call_parser} \
+    --reasoning-parser {reasoning_parser} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --trust-remote-code \
+    --chat-template unsloth.jinja \
+    --load-format {load_format} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel}
