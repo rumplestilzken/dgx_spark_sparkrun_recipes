@@ -1,0 +1,40 @@
+recipe_version: "2"
+model: RedHatAI/Llama-4-Maverick-17B-128E-Instruct-NVFP4
+runtime: vllm
+
+# this recipe is specific to multi-node, so we set min/max nodes
+min_nodes: 3
+# max_nodes: 3
+
+# using the Spark Arena eugr nightly container will signal sparkrun to use @eugr's latest release
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
+
+metadata:
+  description: Recipe for RedHatAI/Llama-4-Maverick-17B-128E-Instruct-NVFP4 to run on 2 nodes
+
+build_args:
+  - --tf5
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  pipeline_parallel: 3
+  tensor_parallel: 1
+  gpu_memory_utilization: 0.9
+  max_model_len: 262144
+
+# Environment variables
+env:
+  PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
+  VLLM_MARLIN_USE_ATOMIC_ADD: 1
+
+# The vLLM serve command template
+command: |
+  vllm serve {model} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --max_model_len {max_model_len} \
+    --port {port} \
+    --host {host} \
+    --enable-prefix-caching \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel}
