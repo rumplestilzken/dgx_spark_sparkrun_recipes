@@ -1,0 +1,42 @@
+recipe_version: "2"
+model: RedHatAI/Llama-4-Scout-17B-16E-Instruct-NVFP4
+runtime: vllm
+
+# this recipe is specific to 3-node mesh, so we set min/max nodes to 3
+min_nodes: 1
+# max_nodes: 3
+
+# using the Spark Arena eugr nightly container will signal sparkrun to use @eugr's latest release
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
+
+metadata:
+  description: Recipe for Llama-4-Scout-17B-16E-Instruct-NVFP4 to run on 3-node mesh in pipeline-parallel mode
+
+build_args:
+  - --tf5
+
+mods:
+
+defaults:
+  port: 8000
+  host: 0.0.0.0
+  pipeline_parallel: 3
+  tensor_parallel: 1
+  gpu_memory_utilization: 0.80
+  max_num_batched_tokens: 2048
+  max_num_seqs: 10
+  load_format: instanttensor
+
+# Environment variables
+env:
+
+# The vLLM serve command template
+command: |
+  vllm serve {model} \
+    --gpu-memory-utilization {gpu_memory_utilization} \
+    --port {port} \
+    --host {host} \
+    --enable-prefix-caching \
+    --load-format {load_format} \
+    -tp {tensor_parallel} \
+    -pp {pipeline_parallel}
