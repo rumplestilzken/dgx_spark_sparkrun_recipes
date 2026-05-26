@@ -23,10 +23,9 @@ defaults:
   port: 8000
   host: 0.0.0.0
   # max_model_len: 262144
-  max_num_batched_tokens: 2048
-  tensor_parallel: 1
-  pipeline_parallel: 3
-  gpu_memory_utilization: 0.7
+  tensor_parallel: 2
+  pipeline_parallel: 1
+  gpu_memory_utilization: 0.8
   load_format: instanttensor
   max_num_batched_tokens: 2048
   max_num_seq: 10

@@ -20,8 +20,8 @@ defaults:
   host: 0.0.0.0
   pipeline_parallel: 3
   tensor_parallel: 1
-  gpu_memory_utilization: 0.9
-  max_model_len: 262144
+  gpu_memory_utilization: 0.87
+  max_model_len: 128000
 
 # Environment variables
 env:

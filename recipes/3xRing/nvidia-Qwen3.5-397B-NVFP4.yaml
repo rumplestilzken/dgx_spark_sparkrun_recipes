@@ -13,7 +13,7 @@ cluster_only: true
 solo_only: false
 
 # Container image to use
-container: vllm-node-tf5
+container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
 
 build_args:
   - --tf5
@@ -37,6 +37,7 @@ defaults:
 
 # Environment variables
 env:
+  HF_HUB_OFFLINE: 1
   # VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: 0
 
 # The vLLM serve command template
@@ -48,8 +49,6 @@ command: |
     --enable-prefix-caching \
     -tp {tensor_parallel}  \
     -pp {pipeline_parallel} \
-    --quantization {quantization} \
-    --kv-cache-dtype {kv_cache_dtype} \
     --load-format {load_format} \
     --max_num_batched_tokens {max_num_batched_tokens} \
     --max_num_seq {max_num_seq} \

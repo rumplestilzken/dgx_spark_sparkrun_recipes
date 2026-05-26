@@ -37,13 +37,12 @@ defaults:
 env:
   PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
   VLLM_MARLIN_USE_ATOMIC_ADD: 1
+  HF_HUB_OFFLINE: 1
 
 # The vLLM serve command template
 command: |
   vllm serve {model} \
-    --max-model-len {max_model_len} \
     --max-num-seqs {max_num_seqs} \
-    --kv-cache-dtype {kv_cache_dtype} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     --port {port} \
     --host {host} \
@@ -52,7 +51,6 @@ command: |
     --tool-call-parser {tool_call_parser} \
     --reasoning-parser {reasoning_parser} \
     --max-num-batched-tokens {max_num_batched_tokens} \
-    --trust-remote-code \
     --chat-template unsloth.jinja \
     --load-format {load_format} \
     -tp {tensor_parallel} \
