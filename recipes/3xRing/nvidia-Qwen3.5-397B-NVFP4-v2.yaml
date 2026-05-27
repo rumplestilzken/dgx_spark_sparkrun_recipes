@@ -24,9 +24,9 @@ defaults:
   host: 0.0.0.0
   pipeline_parallel: 3
   tensor_parallel: 1
-  gpu_memory_utilization: 0.75
+  gpu_memory_utilization: 0.8520
   max_model_len: 262144
-  max_num_batched_tokens: 16384
+  max_num_batched_tokens: 4288
   max_num_seqs: 10
   kv_cache_dtype: fp8
   tool_call_parser: qwen3_coder
@@ -37,12 +37,14 @@ defaults:
 env:
   PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
   VLLM_MARLIN_USE_ATOMIC_ADD: 1
-  HF_HUB_OFFLINE: 1
+  VLLM_DISTRIBUTED_EXECUTOR_BACKEND: "ray"
+
 
 # The vLLM serve command template
 command: |
   vllm serve {model} \
     --max-num-seqs {max_num_seqs} \
+    --max-num-batched-tokens {max_num_batched_tokens} \
     --gpu-memory-utilization {gpu_memory_utilization} \
     --port {port} \
     --host {host} \
@@ -50,8 +52,8 @@ command: |
     --enable-auto-tool-choice \
     --tool-call-parser {tool_call_parser} \
     --reasoning-parser {reasoning_parser} \
-    --max-num-batched-tokens {max_num_batched_tokens} \
     --chat-template unsloth.jinja \
     --load-format {load_format} \
     -tp {tensor_parallel} \
-    -pp {pipeline_parallel}
+    -pp {pipeline_parallel} \
+    --distributed-executor-backend ray 

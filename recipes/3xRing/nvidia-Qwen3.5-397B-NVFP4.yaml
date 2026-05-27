@@ -14,6 +14,7 @@ solo_only: false
 
 # Container image to use
 container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
+# container: vllm:latest
 
 build_args:
   - --tf5
@@ -27,18 +28,21 @@ defaults:
   # max_num_batched_tokens: 2048
   tensor_parallel: 1
   pipeline_parallel: 3
-  gpu_memory_utilization: 0.8576
-  quantization: compressed-tensors
-  kv_cache_dtype: fp8
-  # load_format: instanttensor
+  gpu_memory_utilization: 0.85
+  # quantization: compressed-tensors
+  # kv_cache_dtype: fp8
   load_format: instanttensor
   max_num_batched_tokens: 16384
   max_num_seq: 10
 
+# Mod required to fix ROPE syntax error
+# mods:
+#   - mods/fix-qwen3.5-chat-template
+
 # Environment variables
 env:
-  HF_HUB_OFFLINE: 1
   # VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: 0
+  # PYTORCH_CUDA_ALLOC_CONF: "expands
 
 # The vLLM serve command template
 command: |
@@ -50,6 +54,5 @@ command: |
     -tp {tensor_parallel}  \
     -pp {pipeline_parallel} \
     --load-format {load_format} \
-    --max_num_batched_tokens {max_num_batched_tokens} \
-    --max_num_seq {max_num_seq} \
-    --distributed-executor-backend ray
+    --max-num-batched-tokens {max_num_batched_tokens} \
+    --distributed-executor-backend ray 

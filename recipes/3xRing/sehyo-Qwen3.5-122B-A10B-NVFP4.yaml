@@ -27,10 +27,10 @@ defaults:
   # max_num_batched_tokens: 2048
   tensor_parallel: 1
   pipeline_parallel: 3
-  gpu_memory_utilization: 0.8048
-  quantization: compressed-tensors
-  kv_cache_dtype: fp8
-  load_format: instanttensor
+  gpu_memory_utilization: 0.8548
+  # quantization: compressed-tensors
+  # kv_cache_dtype: fp8
+  # load_format: instanttensor
   max_num_batched_tokens: 16384
   max_num_seq: 10
 
@@ -47,9 +47,6 @@ command: |
     --enable-prefix-caching \
     -tp {tensor_parallel}  \
     -pp {pipeline_parallel}  \
-    --quantization {quantization} \
-    --kv-cache-dtype {kv_cache_dtype} \
-    --load-format {load_format} \
     --max_num_batched_tokens {max_num_batched_tokens} \
     --max_num_seq {max_num_seq} \
     --distributed-executor-backend ray
