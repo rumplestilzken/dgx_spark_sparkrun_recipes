@@ -9,7 +9,7 @@ description: vLLM serving nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
 model: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
 
 # Only cluster is supported
-solo_only: true
+cluster_only: true
 
 # Container image to use
 container: vllm-node-tf5
@@ -27,7 +27,7 @@ defaults:
   # max_model_len: 262144
   # max_num_seq: 256
   # max_num_batched_tokens: 2048
-  tensor_parallel: 1
+  tensor_parallel: 2
   gpu_memory_utilization: 0.8 
   # quantization: compressed-tensors
   # kv_cache_dtype: fp8
@@ -56,5 +56,5 @@ command: |
     --max_num_batched_tokens {max_num_batched_tokens} \
     --max_num_seq {max_num_seq} \
     --load-format {load_format} \
-    --speculative-config '{{"method": "ngram", "num_speculative_tokens": 5}}' \
+    --speculative-config '{"method": "ngram", "num_speculative_tokens": 5}' \
     --distributed-executor-backend ray
