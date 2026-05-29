@@ -1,28 +1,21 @@
-# Recipe: Qwen3.5-397B-A17B-NVFP4
-# nvidia/Qwen3.5-397B-A17B-NVFP4 model in online NVFP4 quantization
+# Recipe: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4
+# nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4 model in online NVFP4 quantization
 
 recipe_version: "1"
-name: nvidia/Qwen3.5-397B-A17B-NVFP4
-description: vLLM serving nvidia/Qwen3.5-397B-A17B-NVFP4
+name: Qwen/Qwen3-VL-Embedding-8B
+description: vLLM serving Qwen/Qwen3-VL-Embedding-8B
 
 # HuggingFace model to download (optional, for --download-model)
-model: nvidia/Qwen3.5-397B-A17B-NVFP4
+model: Qwen/Qwen3-VL-Embedding-8B
 
 # Only cluster is supported
-cluster_only: true
-solo_only: false
+solo_only: true
 
 # Container image to use
-# container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
-# container: vllm:latest
 container: vllm-node-tf5
 
 build_args:
   - --tf5
-
-# Mod required to fix ROPE syntax error
-# mods:
-#   - mods/fix-qwen3.5-chat-template
 
 # Default settings (can be overridden via CLI)
 defaults:
@@ -32,8 +25,7 @@ defaults:
   # max_num_seq: 256
   # max_num_batched_tokens: 2048
   tensor_parallel: 1
-  pipeline_parallel: 3
-  gpu_memory_utilization: 0.8674
+  gpu_memory_utilization: 0.1
   # quantization: compressed-tensors
   # kv_cache_dtype: fp8
   load_format: instanttensor
@@ -42,18 +34,17 @@ defaults:
 
 # Environment variables
 env:
-  # VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: 0
-  # PYTORCH_CUDA_ALLOC_CONF: "expands
 
 # The vLLM serve command template
 command: |
-  vllm serve nvidia/Qwen3.5-397B-A17B-NVFP4  \
+  vllm serve Qwen/Qwen3-VL-Embedding-8B  \
     --gpu-memory-utilization {gpu_memory_utilization} \
     --port {port} \
     --host {host} \
     --enable-prefix-caching \
     -tp {tensor_parallel}  \
-    -pp {pipeline_parallel} \
+    --max_num_batched_tokens {max_num_batched_tokens} \
+    --max_num_seq {max_num_seq} \
     --load-format {load_format} \
-    --max-num-batched-tokens {max_num_batched_tokens} \
-    --distributed-executor-backend ray 
+    --speculative-config '{"method": "ngram", "num_speculative_tokens": 5}' \
+    --distributed-executor-backend ray
