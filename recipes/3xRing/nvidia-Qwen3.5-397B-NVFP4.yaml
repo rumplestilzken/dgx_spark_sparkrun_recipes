@@ -13,11 +13,16 @@ cluster_only: true
 solo_only: false
 
 # Container image to use
-container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
+# container: ghcr.io/spark-arena/dgx-vllm-eugr-nightly-tf5:latest
 # container: vllm:latest
+container: vllm-node-tf5
 
 build_args:
   - --tf5
+
+# Mod required to fix ROPE syntax error
+mods:
+  - mods/fix-qwen3.5-chat-template
 
 # Default settings (can be overridden via CLI)
 defaults:
@@ -28,7 +33,7 @@ defaults:
   # max_num_batched_tokens: 2048
   tensor_parallel: 1
   pipeline_parallel: 3
-  gpu_memory_utilization: 0.85
+  gpu_memory_utilization: 0.8674
   # quantization: compressed-tensors
   # kv_cache_dtype: fp8
   load_format: instanttensor

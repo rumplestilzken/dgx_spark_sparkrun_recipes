@@ -37,7 +37,6 @@ defaults:
 env:
   PYTORCH_CUDA_ALLOC_CONF: "expandable_segments:True"
   VLLM_MARLIN_USE_ATOMIC_ADD: 1
-  VLLM_DISTRIBUTED_EXECUTOR_BACKEND: "ray"
 
 
 # The vLLM serve command template
