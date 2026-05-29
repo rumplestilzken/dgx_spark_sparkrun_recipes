@@ -18,7 +18,7 @@ build_args:
   - --tf5
 
 mods:
-  - mods/nemotron-nano
+  - mods/nemotron-super
 
 # Default settings (can be overridden via CLI)
 defaults:
